@@ -7,26 +7,196 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ==========================================
+// ENUMS
+// ==========================================
+
 enum Role {
   CUSTOMER
   PROVIDER
   ADMIN
 }
 
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+// ==========================================
+// USER MODEL
+// ==========================================
+
 model User {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   name         String
-  email        String   @unique
+  email        String    @unique
   password     String
   phone        String?
-  role         Role     @default(CUSTOMER)
+  role         Role      @default(CUSTOMER)
   profileImage String?
   city         String?
   state        String?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  providerProfile  Provider?
+  customerBookings Booking[] @relation("CustomerBookings")
 
   @@index([email])
   @@index([role])
+}
+
+// ==========================================
+// SERVICE CATEGORY MODEL
+// ==========================================
+
+model ServiceCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  iconName    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  providerServices ProviderService[]
+  bookings         Booking[]
+
+  @@index([slug])
+  @@index([isActive])
+}
+
+// ==========================================
+// PROVIDER PROFILE MODEL
+// ==========================================
+
+model Provider {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  bio                String?
+  experienceYears    Int                @default(0)
+  hourlyRate         Float              @default(0)
+  city               String?
+  state              String?
+  latitude           Float?
+  longitude          Float?
+  verificationStatus VerificationStatus @default(PENDING)
+  averageRating      Float              @default(0)
+  totalReviews       Int                @default(0)
+  completedJobs      Int                @default(0)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services     ProviderService[]
+  availability Availability[]
+  bookings     Booking[]         @relation("ProviderBookings")
+
+  @@index([verificationStatus])
+  @@index([city])
+  @@index([averageRating])
+}
+
+// ==========================================
+// PROVIDER SERVICE (JOIN TABLE)
+// ==========================================
+
+model ProviderService {
+  id                String          @id @default(uuid())
+  providerId        String
+  serviceCategoryId String
+  createdAt         DateTime        @default(now())
+
+  // Relations
+  provider        Provider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, serviceCategoryId])
+  @@index([providerId])
+  @@index([serviceCategoryId])
+}
+
+// ==========================================
+// AVAILABILITY MODEL (Fixed Time Slots)
+// ==========================================
+
+model Availability {
+  id         String    @id @default(uuid())
+  providerId String
+  dayOfWeek  DayOfWeek
+  startTime  String    // HH:MM format e.g. "09:00"
+  endTime    String    // HH:MM format e.g. "10:00"
+  isBooked   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  // Relations
+  provider Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@unique([providerId, dayOfWeek, startTime, endTime])
+  @@index([providerId])
+  @@index([dayOfWeek])
+}
+
+// ==========================================
+// BOOKING MODEL
+// ==========================================
+
+model Booking {
+  id                String        @id @default(uuid())
+  customerId        String
+  providerId        String
+  serviceCategoryId String
+  availabilityId    String?
+  bookingDate       DateTime
+  startTime         String        // HH:MM format
+  endTime           String        // HH:MM format
+  serviceAddress    String
+  city              String?
+  latitude          Float?
+  longitude         Float?
+  estimatedPrice    Float?
+  status            BookingStatus @default(PENDING)
+  notes             String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  customer        User            @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Cascade)
+  provider        Provider        @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  availability    Availability?   @relation(fields: [availabilityId], references: [id])
+
+  // Double-booking prevention: same provider cannot have two bookings at same date/time
+  @@unique([providerId, bookingDate, startTime, endTime])
+
+  @@index([customerId])
+  @@index([providerId])
+  @@index([status])
+  @@index([bookingDate])
 }

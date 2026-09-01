@@ -1,74 +1,46 @@
 import { useAuth } from '../context/AuthContext';
-import { Briefcase, AlertTriangle, ShieldCheck, Calendar, Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Briefcase, User, Clock, Calendar, Settings, ArrowRight } from 'lucide-react';
 
 export const ProviderDashboard = () => {
   const { user } = useAuth();
 
+  const quickLinks = [
+    { to: '/provider/profile', icon: User, label: 'My Profile', desc: 'Update your bio, rates & location', color: 'text-sky-600 bg-sky-50' },
+    { to: '/provider/services', icon: Settings, label: 'My Services', desc: 'Select services you offer', color: 'text-emerald-600 bg-emerald-50' },
+    { to: '/provider/availability', icon: Clock, label: 'Availability', desc: 'Set your weekly time slots', color: 'text-violet-600 bg-violet-50' },
+    { to: '/provider/bookings', icon: Calendar, label: 'Bookings', desc: 'View and manage booking requests', color: 'text-amber-600 bg-amber-50' },
+  ];
+
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Welcome Header */}
-        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center space-x-2 text-sky-600 font-bold text-xs">
-              <Briefcase className="w-4 h-4" />
-              <span>Service Provider Portal</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-              Welcome, {user?.name}!
-            </h1>
-            <p className="text-sm text-gray-600">{user?.email} • Role: {user?.role}</p>
-          </div>
-
-          <div className="flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 rounded-xl text-xs font-bold">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span>Verification Status: Pending (Phase 2)</span>
-          </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-14 h-14 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-700 font-extrabold text-2xl">
+          {user?.name?.[0]?.toUpperCase()}
         </div>
-
-        {/* Phase 1 Verification Message */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3">
-          <div className="flex items-center space-x-2 text-sky-600 font-bold">
-            <ShieldCheck className="w-5 h-5" />
-            <h2>Provider Account Status</h2>
-          </div>
-          <p className="text-sm text-gray-600">
-            Your Service Provider account is registered in PostgreSQL. Provider profile verification and admin document approval flows will be activated in Phase 2.
-          </p>
+        <div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Welcome back, <span className="text-sky-600">{user?.name}</span></h1>
+          <p className="text-gray-500 text-sm">Provider Dashboard</p>
         </div>
+      </div>
 
-        {/* Future Feature Placeholders (Status: Planned) */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900">Provider Features</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
-              <div className="p-3 bg-sky-50 text-sky-600 rounded-xl w-fit">
-                <Briefcase className="w-6 h-6" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {quickLinks.map((ql) => {
+          const Icon = ql.icon;
+          return (
+            <Link key={ql.to} to={ql.to}
+              className="group bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all p-5 flex items-center gap-4">
+              <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${ql.color} group-hover:scale-110 transition-transform`}>
+                <Icon className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-gray-900">Service Profile Management</h4>
-              <p className="text-xs text-gray-500">Configure skills, hourly rates, and service radius.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 2)</span>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
-              <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl w-fit">
-                <Calendar className="w-6 h-6" />
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-gray-900">{ql.label}</p>
+                <p className="text-xs text-gray-500 truncate">{ql.desc}</p>
               </div>
-              <h4 className="font-bold text-gray-900">Weekly Availability Slot Matrix</h4>
-              <p className="text-xs text-gray-500">Set real-time booking availability schedules.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 2)</span>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
-              <div className="p-3 bg-amber-50 text-amber-600 rounded-xl w-fit">
-                <Star className="w-6 h-6" />
-              </div>
-              <h4 className="font-bold text-gray-900">Ratings & Proof Reviews</h4>
-              <p className="text-xs text-gray-500">View customer reviews and upload before/after service photos.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 3)</span>
-            </div>
-          </div>
-        </div>
+              <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-sky-500 shrink-0 transition-colors" />
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

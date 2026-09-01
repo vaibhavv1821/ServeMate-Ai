@@ -5,8 +5,14 @@ import { env } from './config/env.js';
 import { requestLogger } from './middlewares/requestLogger.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { AppError } from './utils/AppError.js';
+
+// Route imports
 import healthRoutes from './modules/health/health.routes.js';
 import authRoutes from './routes/authRoutes.js';
+import serviceCategoryRoutes from './modules/services/serviceCategory.routes.js';
+import providerRoutes from './modules/providers/provider.routes.js';
+import availabilityRoutes from './modules/availability/availability.routes.js';
+import bookingRoutes from './modules/bookings/booking.routes.js';
 
 const app = express();
 
@@ -27,6 +33,10 @@ app.use(requestLogger);
 // API Routes
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/services', serviceCategoryRoutes);
+app.use('/api/v1/providers', providerRoutes);
+app.use('/api/v1/availability', availabilityRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 
 // Handle Unknown Routes
 app.all('*', (req, res, next) => {

@@ -8,10 +8,12 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "prisma:generate": "prisma generate",
-    "prisma:push": "prisma db push"
+    "prisma:push": "prisma db push",
+    "db:seed": "node prisma/seed.js",
+    "test": "node --test tests/phase2.test.js",
+    "test:phase1": "node --test tests/auth.test.js"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -21,6 +23,12 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "prisma": "^6.19.3"
+    "@prisma/client": "^5.22.0",
+    "prisma": "^5.22.0"
+  },
+  "allowScripts": {
+    "@prisma/client@5.22.0": true,
+    "@prisma/engines@5.22.0": true,
+    "prisma@5.22.0": true
   }
 }
