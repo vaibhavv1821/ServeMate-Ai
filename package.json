@@ -1,0 +1,14 @@
+{
+  "name": "servmate-root",
+  "version": "1.0.0",
+  "description": "ServMate - AI-Assisted Hyperlocal Service Marketplace",
+  "type": "module",
+  "scripts": {
+    "docs:pdf": "node scripts/generate-pdf-docs.js",
+    "backend:dev": "npm run dev --prefix backend",
+    "frontend:dev": "npm run dev --prefix frontend"
+  },
+  "devDependencies": {
+    "pdfkit": "^0.16.0"
+  }
+}
