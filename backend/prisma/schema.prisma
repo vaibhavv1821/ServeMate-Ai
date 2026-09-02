@@ -28,6 +28,7 @@ enum BookingStatus {
   CONFIRMED
   REJECTED
   CANCELLED
+  SERVICE_STARTED
   COMPLETED
 }
 
@@ -39,6 +40,11 @@ enum DayOfWeek {
   FRIDAY
   SATURDAY
   SUNDAY
+}
+
+enum ProofType {
+  BEFORE_SERVICE
+  AFTER_SERVICE
 }
 
 // ==========================================
@@ -60,8 +66,13 @@ model User {
   updatedAt    DateTime  @updatedAt
 
   // Relations
-  providerProfile  Provider?
-  customerBookings Booking[] @relation("CustomerBookings")
+  providerProfile       Provider?
+  customerBookings      Booking[]      @relation("CustomerBookings")
+  customerConversations Conversation[] @relation("CustomerConversations")
+  providerConversations Conversation[] @relation("ProviderConversations")
+  sentMessages          Message[]      @relation("SentMessages")
+  customerReviews       Review[]       @relation("CustomerReviews")
+  uploadedProofs        ServiceProof[] @relation("UploadedProofs")
 
   @@index([email])
   @@index([role])
@@ -115,6 +126,7 @@ model Provider {
   services     ProviderService[]
   availability Availability[]
   bookings     Booking[]         @relation("ProviderBookings")
+  reviews      Review[]
 
   @@index([verificationStatus])
   @@index([city])
@@ -191,12 +203,104 @@ model Booking {
   provider        Provider        @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
   serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
   availability    Availability?   @relation(fields: [availabilityId], references: [id])
+  conversation    Conversation?
+  review          Review?
+  proofs          ServiceProof[]
 
-  // Double-booking prevention: same provider cannot have two bookings at same date/time
+  // Double-booking prevention
   @@unique([providerId, bookingDate, startTime, endTime])
 
   @@index([customerId])
   @@index([providerId])
   @@index([status])
   @@index([bookingDate])
+}
+
+// ==========================================
+// CONVERSATION MODEL (Phase 3)
+// ==========================================
+
+model Conversation {
+  id         String   @id @default(uuid())
+  customerId String
+  providerId String
+  bookingId  String?  @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  customer User      @relation("CustomerConversations", fields: [customerId], references: [id], onDelete: Cascade)
+  provider User      @relation("ProviderConversations", fields: [providerId], references: [id], onDelete: Cascade)
+  booking  Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@unique([customerId, providerId])
+  @@index([customerId])
+  @@index([providerId])
+}
+
+// ==========================================
+// MESSAGE MODEL (Phase 3)
+// ==========================================
+
+model Message {
+  id             String    @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+  @@index([createdAt])
+}
+
+// ==========================================
+// REVIEW MODEL (Phase 3)
+// ==========================================
+
+model Review {
+  id         String   @id @default(uuid())
+  bookingId  String   @unique
+  customerId String
+  providerId String
+  rating     Int      // 1–5
+  comment    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  customer User     @relation("CustomerReviews", fields: [customerId], references: [id], onDelete: Cascade)
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([customerId])
+  @@index([rating])
+}
+
+// ==========================================
+// SERVICE PROOF MODEL (Phase 3)
+// ==========================================
+
+model ServiceProof {
+  id         String    @id @default(uuid())
+  bookingId  String
+  uploadedBy String
+  type       ProofType
+  fileUrl    String
+  publicId   String
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  uploader User    @relation("UploadedProofs", fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([type])
 }

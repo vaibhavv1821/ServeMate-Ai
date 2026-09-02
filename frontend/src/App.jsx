@@ -14,6 +14,7 @@ import ProviderServices from './pages/ProviderServices';
 import ProviderAvailability from './pages/ProviderAvailability';
 import ProviderBookings from './pages/ProviderBookings';
 import AdminDashboard from './pages/AdminDashboard';
+import Messages from './pages/Messages';
 import ProtectedRoute from './components/ProtectedRoute';
 import RoleProtectedRoute from './components/RoleProtectedRoute';
 import Unauthorized from './pages/Unauthorized';
@@ -34,18 +35,20 @@ function App() {
           <Route path="/providers/:id" element={<ProviderDetails />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* ── Customer Protected Routes ── */}
+          {/* ── Customer Routes ── */}
           <Route path="/customer/dashboard" element={<RoleProtectedRoute allowedRoles={['CUSTOMER']}><CustomerDashboard /></RoleProtectedRoute>} />
-          <Route path="/customer/bookings" element={<RoleProtectedRoute allowedRoles={['CUSTOMER']}><CustomerBookings /></RoleProtectedRoute>} />
+          <Route path="/customer/bookings"  element={<RoleProtectedRoute allowedRoles={['CUSTOMER']}><CustomerBookings /></RoleProtectedRoute>} />
+          <Route path="/customer/messages"  element={<RoleProtectedRoute allowedRoles={['CUSTOMER']}><Messages /></RoleProtectedRoute>} />
 
-          {/* ── Provider Protected Routes ── */}
-          <Route path="/provider/dashboard" element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderDashboard /></RoleProtectedRoute>} />
-          <Route path="/provider/profile" element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderProfile /></RoleProtectedRoute>} />
-          <Route path="/provider/services" element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderServices /></RoleProtectedRoute>} />
+          {/* ── Provider Routes ── */}
+          <Route path="/provider/dashboard"    element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderDashboard /></RoleProtectedRoute>} />
+          <Route path="/provider/profile"      element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderProfile /></RoleProtectedRoute>} />
+          <Route path="/provider/services"     element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderServices /></RoleProtectedRoute>} />
           <Route path="/provider/availability" element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderAvailability /></RoleProtectedRoute>} />
-          <Route path="/provider/bookings" element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderBookings /></RoleProtectedRoute>} />
+          <Route path="/provider/bookings"     element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><ProviderBookings /></RoleProtectedRoute>} />
+          <Route path="/provider/messages"     element={<RoleProtectedRoute allowedRoles={['PROVIDER']}><Messages /></RoleProtectedRoute>} />
 
-          {/* ── Admin Protected Routes ── */}
+          {/* ── Admin Routes ── */}
           <Route path="/admin/dashboard" element={<RoleProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></RoleProtectedRoute>} />
 
           {/* ── Fallback ── */}

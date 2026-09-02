@@ -25,8 +25,11 @@ export const createBooking = catchAsync(async (req, res) => {
 
   const bookingDateObj = new Date(bookingDate);
 
+
   // Run inside a transaction for atomicity
+  // timeout: 30s to handle Neon pooler cold-start latency
   const booking = await prisma.$transaction(async (tx) => {
+
     // 1. Verify provider exists and is APPROVED
     const provider = await tx.provider.findFirst({
       where: { id: providerId, verificationStatus: 'APPROVED' },
@@ -89,7 +92,8 @@ export const createBooking = catchAsync(async (req, res) => {
     }
 
     return newBooking;
-  });
+  }, { timeout: 30000 });
+
 
   res.status(201).json({ status: 'success', message: 'Booking created. Waiting for provider confirmation.', data: { booking } });
 });
@@ -202,7 +206,7 @@ export const rejectBooking = catchAsync(async (req, res) => {
       await tx.availability.update({ where: { id: booking.availabilityId }, data: { isBooked: false } });
     }
     return tx.booking.update({ where: { id: req.params.id }, data: { status: 'REJECTED' } });
-  });
+  }, { timeout: 30000 });
 
   res.status(200).json({ status: 'success', message: 'Booking rejected', data: { booking: updated } });
 });
@@ -224,10 +228,11 @@ export const cancelBooking = catchAsync(async (req, res) => {
       await tx.availability.update({ where: { id: booking.availabilityId }, data: { isBooked: false } });
     }
     return tx.booking.update({ where: { id: req.params.id }, data: { status: 'CANCELLED' } });
-  });
+  }, { timeout: 30000 });
 
   res.status(200).json({ status: 'success', message: 'Booking cancelled', data: { booking: updated } });
 });
+
 
 /**
  * PATCH /api/v1/bookings/:id/complete
@@ -244,7 +249,10 @@ export const completeBooking = catchAsync(async (req, res) => {
     }
   }
 
-  if (booking.status !== 'CONFIRMED') throw new AppError('Only confirmed bookings can be marked complete', 400);
+  if (!['CONFIRMED', 'SERVICE_STARTED'].includes(booking.status)) {
+    throw new AppError('Only CONFIRMED or SERVICE_STARTED bookings can be marked complete', 400);
+  }
+
 
   const updated = await prisma.$transaction(async (tx) => {
     // Increment provider completedJobs counter
@@ -253,7 +261,8 @@ export const completeBooking = catchAsync(async (req, res) => {
       data: { completedJobs: { increment: 1 } },
     });
     return tx.booking.update({ where: { id: req.params.id }, data: { status: 'COMPLETED' } });
-  });
+  }, { timeout: 30000 });
+
 
   res.status(200).json({ status: 'success', message: 'Booking marked as completed', data: { booking: updated } });
 });
