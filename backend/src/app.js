@@ -18,6 +18,7 @@ import bookingRoutes from './modules/bookings/booking.routes.js';
 import conversationRoutes from './modules/conversations/conversation.routes.js';
 import bookingPhase3Routes from './modules/bookings/booking.phase3.routes.js';
 import providerReviewRoutes from './modules/providers/provider.review.routes.js';
+import locationRoutes from './modules/location/location.routes.js';
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/conversations', conversationRoutes);
 app.use('/api/v1/bookings',      bookingPhase3Routes);   // OTP, proof, review (merged with existing booking base)
 app.use('/api/v1/providers',     providerReviewRoutes);  // reviews + trust (merged after provider router)
+app.use('/api/v1/location',      locationRoutes);
 
 // Handle Unknown Routes
 app.all('*', (req, res, next) => {

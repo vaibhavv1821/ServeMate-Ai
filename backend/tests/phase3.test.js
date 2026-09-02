@@ -38,6 +38,16 @@ before(async () => {
   await new Promise((res) => server.listen(0, res));
   baseUrl = `http://localhost:${server.address().port}/api/v1`;
 
+  // Warm up Neon connection in case compute was sleeping
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      break;
+    } catch {
+      await new Promise((r) => setTimeout(r, 2000));
+    }
+  }
+
   // Pre-clean any leftover Redis keys from previous test runs to prevent
   // rate-limit contamination across test re-runs
   try {
@@ -50,6 +60,7 @@ before(async () => {
     // Non-fatal — if Redis is down, Redis tests will fail with meaningful errors
   }
 });
+
 
 
 after(async () => {

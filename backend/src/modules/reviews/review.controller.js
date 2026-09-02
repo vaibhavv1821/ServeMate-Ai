@@ -71,7 +71,8 @@ export const createReview = async (req, res, next) => {
       });
 
       return newReview;
-    });
+    }, { timeout: 30000 });
+
 
     res.status(201).json({
       status: 'success',
