@@ -1,5 +1,7 @@
 import { useAuth } from '../context/AuthContext';
-import { UserCheck, ShieldCheck, Clock, Search, MapPin } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { UserCheck, ShieldCheck, Clock, Search, MapPin, Sparkles } from 'lucide-react';
+import ServiceIssueAnalyzer from '../components/ServiceIssueAnalyzer';
 
 export const CustomerDashboard = () => {
   const { user } = useAuth();
@@ -24,52 +26,45 @@ export const CustomerDashboard = () => {
           </span>
         </div>
 
-        {/* Phase 1 Completion Message */}
-        <div className="bg-gradient-to-r from-sky-500 to-indigo-600 rounded-2xl p-6 text-white shadow-lg space-y-3">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-6 h-6 text-sky-200" />
-            <h2 className="text-xl font-bold">Phase 1 Authentication Complete</h2>
-          </div>
-          <p className="text-sky-100 text-sm max-w-3xl">
-            You are securely logged into ServMate using real PostgreSQL + Neon database credentials and verified JWT token authorization.
-          </p>
-        </div>
+        {/* Phase 4 AI Issue Analyzer */}
+        <ServiceIssueAnalyzer />
 
-        {/* Navigation & Service Placeholders (Status: Planned) */}
+        {/* Quick Navigation Cards */}
         <div className="space-y-4">
-          <h3 className="text-lg font-bold text-gray-900">Services & Bookings</h3>
+          <h3 className="text-lg font-bold text-gray-900">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
+            <Link to="/services" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow space-y-3 block">
               <div className="p-3 bg-sky-50 text-sky-600 rounded-xl w-fit">
                 <Search className="w-6 h-6" />
               </div>
               <h4 className="font-bold text-gray-900">Browse Local Services</h4>
               <p className="text-xs text-gray-500">Discover verified plumbers, electricians, and home mechanics near you.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 2)</span>
-            </div>
+              <span className="inline-block text-[10px] uppercase font-mono bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded font-bold">ACTIVE MARKETPLACE</span>
+            </Link>
 
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
+            <Link to="/customer/bookings" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow space-y-3 block">
               <div className="p-3 bg-indigo-50 text-indigo-600 rounded-xl w-fit">
                 <Clock className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-gray-900">Active Bookings</h4>
-              <p className="text-xs text-gray-500">Track real-time service progress and OTP start verification.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 3)</span>
-            </div>
+              <h4 className="font-bold text-gray-900">My Bookings</h4>
+              <p className="text-xs text-gray-500">Track real-time service progress, OTP start verification, and backup options.</p>
+              <span className="inline-block text-[10px] uppercase font-mono bg-sky-100 text-sky-700 px-2 py-0.5 rounded font-bold">REALTIME TRACKING</span>
+            </Link>
 
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-3 opacity-75">
+            <Link to="/providers" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow space-y-3 block">
               <div className="p-3 bg-purple-50 text-purple-600 rounded-xl w-fit">
                 <MapPin className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-gray-900">Hyperlocal Provider Map</h4>
+              <h4 className="font-bold text-gray-900">Find Providers</h4>
               <p className="text-xs text-gray-500">Smart geospatial provider matching based on distance and availability.</p>
-              <span className="inline-block text-[10px] uppercase font-mono bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold">STATUS: PLANNED (PHASE 2)</span>
-            </div>
+              <span className="inline-block text-[10px] uppercase font-mono bg-purple-100 text-purple-700 px-2 py-0.5 rounded font-bold">SMART MATCHING</span>
+            </Link>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
 
 export default CustomerDashboard;

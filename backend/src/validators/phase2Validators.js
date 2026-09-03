@@ -51,6 +51,11 @@ export const createBookingSchema = z.object({
   longitude: z.number().min(-180).max(180).optional(),
   estimatedPrice: z.number().min(0).optional(),
   notes: z.string().max(1000).optional(),
+  urgency: z.enum(['NORMAL', 'URGENT', 'EMERGENCY']).default('NORMAL').optional(),
+  aiCategory: z.string().max(100).optional(),
+  aiSuggestedIssue: z.string().max(255).optional(),
+  aiSuggestedUrgency: z.enum(['NORMAL', 'URGENT', 'EMERGENCY']).optional(),
+  aiConfidence: z.number().min(0).max(1).optional(),
 }).refine((data) => data.startTime < data.endTime, {
   message: 'End time must be after start time',
   path: ['endTime'],
@@ -63,4 +68,6 @@ export const matchingQuerySchema = z.object({
   longitude: z.coerce.number().min(-180).max(180).optional(),
   dayOfWeek: z.enum(['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']).optional(),
   startTime: z.string().regex(timeRegex).optional(),
+  urgency: z.enum(['NORMAL', 'URGENT', 'EMERGENCY']).optional(),
 });
+

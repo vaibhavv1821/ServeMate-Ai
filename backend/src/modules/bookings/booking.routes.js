@@ -9,6 +9,8 @@ import {
   rejectBooking,
   cancelBooking,
   completeBooking,
+  getBackupCandidates,
+  reassignBackupProvider,
 } from './booking.controller.js';
 
 const router = Router();
@@ -21,6 +23,10 @@ router.post('/', authorizeRoles('CUSTOMER'), createBooking);
 router.get('/my', authorizeRoles('CUSTOMER'), getMyBookings);
 router.patch('/:id/cancel', authorizeRoles('CUSTOMER'), cancelBooking);
 
+// Backup Provider routes (Phase 4)
+router.get('/:id/backup-candidates', authorizeRoles('CUSTOMER', 'ADMIN'), getBackupCandidates);
+router.post('/:id/reassign-backup', authorizeRoles('CUSTOMER', 'ADMIN'), reassignBackupProvider);
+
 // Provider routes
 router.get('/provider', authorizeRoles('PROVIDER'), getProviderBookings);
 router.patch('/:id/accept', authorizeRoles('PROVIDER'), acceptBooking);
@@ -31,3 +37,4 @@ router.patch('/:id/complete', authorizeRoles('PROVIDER', 'ADMIN'), completeBooki
 router.get('/:id', getBookingById);
 
 export default router;
+

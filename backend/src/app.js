@@ -20,7 +20,11 @@ import bookingPhase3Routes from './modules/bookings/booking.phase3.routes.js';
 import providerReviewRoutes from './modules/providers/provider.review.routes.js';
 import locationRoutes from './modules/location/location.routes.js';
 
+// Route imports — Phase 4
+import aiRoutes from './modules/ai/ai.routes.js';
+
 const app = express();
+
 
 // Security Middlewares
 app.use(helmet());
@@ -50,7 +54,11 @@ app.use('/api/v1/bookings',      bookingPhase3Routes);   // OTP, proof, review (
 app.use('/api/v1/providers',     providerReviewRoutes);  // reviews + trust (merged after provider router)
 app.use('/api/v1/location',      locationRoutes);
 
+// API Routes — Phase 4
+app.use('/api/v1/ai',            aiRoutes);
+
 // Handle Unknown Routes
+
 app.all('*', (req, res, next) => {
   next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
 });

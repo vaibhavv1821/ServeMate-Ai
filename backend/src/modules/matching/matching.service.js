@@ -125,11 +125,40 @@ export const scoreProvider = (provider, criteria, avgPrice) => {
   }
   score += WEIGHTS.price * priceScore;
 
+  // ── 7. EMERGENCY MODE PRIORITY (Phase 4) ──────────────────────
+  // When urgency is EMERGENCY:
+  // - Prioritize currently available providers with confirmed open slots
+  // - Prioritize closer providers for rapid dispatch
+  // - Preserves deterministic scoring without arbitrary hardcoding
+  if (criteria.urgency === 'EMERGENCY') {
+    let emergencyBonus = 0;
+
+    // Availability priority in emergency: immediate slot boost
+    if (availabilityScore >= 1) {
+      emergencyBonus += 0.12;
+      reasons.unshift('⚡ Emergency Priority: Open availability slot for rapid dispatch');
+    }
+
+    // Distance priority in emergency: closer providers arrive faster
+    if (distanceScore >= 0.7) {
+      emergencyBonus += 0.08;
+      reasons.unshift('⚡ Emergency Priority: Ultra-close proximity (< 15 km)');
+    }
+
+    score += emergencyBonus;
+  } else if (criteria.urgency === 'URGENT') {
+    if (availabilityScore >= 1) {
+      score += 0.05;
+      reasons.unshift('Urgent Priority: Confirmed slot available');
+    }
+  }
+
   return {
-    score: Math.round(score * 100),
+    score: Math.min(100, Math.round(score * 100)),
     reasons,
   };
 };
+
 
 /**
  * Run the matching algorithm against a list of providers.

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import { Droplets, Zap, Sparkles, Hammer, Settings, Paintbrush, BookOpen, ArrowRight, Loader2 } from 'lucide-react';
+import ServiceIssueAnalyzer from '../components/ServiceIssueAnalyzer';
 
 const iconMap = {
+
   Droplets: Droplets, Zap: Zap, Sparkles: Sparkles, Hammer: Hammer,
   Settings: Settings, Paintbrush: Paintbrush, BookOpen: BookOpen,
 };
@@ -43,14 +45,26 @@ export default function Services() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
           Our <span className="text-sky-600">Services</span>
         </h1>
-        <p className="mt-3 text-lg text-gray-500">Choose a service category to find verified local professionals</p>
+        <p className="mt-3 text-lg text-gray-500">Choose a service category or let our AI analyzer assist you</p>
+      </div>
+
+      {/* AI Assistant Section */}
+      <div className="mb-12">
+        <ServiceIssueAnalyzer />
+      </div>
+
+      <div className="flex items-center gap-4 my-8">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs uppercase tracking-wider font-bold text-gray-400">Or browse all categories manually</span>
+        <div className="flex-1 h-px bg-gray-200" />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
         {services.map((svc, idx) => {
           const Icon = iconMap[svc.iconName] || Settings;
           const gradient = categoryColors[idx % categoryColors.length];

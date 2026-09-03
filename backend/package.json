@@ -11,7 +11,12 @@
     "prisma:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
     "test": "node --test tests/phase2.test.js",
-    "test:phase1": "node --test tests/auth.test.js"
+    "test:phase1": "node --test tests/auth.test.js",
+    "test:phase3": "node --test tests/phase3.test.js",
+    "test:location": "node --test tests/location.test.js",
+    "test:phase4": "node --test tests/phase4.test.js",
+    "test:all": "node --test --concurrency=1 tests/auth.test.js tests/phase2.test.js tests/location.test.js tests/phase4.test.js"
+
   },
   "dependencies": {
     "@upstash/redis": "^1.38.3",

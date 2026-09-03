@@ -47,6 +47,13 @@ enum ProofType {
   AFTER_SERVICE
 }
 
+enum Urgency {
+  NORMAL
+  URGENT
+  EMERGENCY
+}
+
+
 // ==========================================
 // USER MODEL
 // ==========================================
@@ -195,8 +202,16 @@ model Booking {
   estimatedPrice    Float?
   status            BookingStatus @default(PENDING)
   notes             String?
+  urgency           Urgency       @default(NORMAL)
+  isEmergency       Boolean       @default(false)
+  aiCategory        String?
+  aiSuggestedIssue  String?
+  aiSuggestedUrgency String?
+  aiConfidence      Float?
+  backupProviderId  String?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
+
 
   // Relations
   customer        User            @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Cascade)
